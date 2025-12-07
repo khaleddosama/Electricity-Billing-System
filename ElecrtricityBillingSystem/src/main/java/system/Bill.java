@@ -2,10 +2,10 @@ package system;
 
 public class Bill {
     
-    private int meterCode;
+    private long meterCode;
     private String region;
     private int unit;
-    private int amount;
+    private double amount;
     private boolean isPaid;
     
     public Bill(int meterCode, String region, int unit, int amount, boolean isPaid ){
