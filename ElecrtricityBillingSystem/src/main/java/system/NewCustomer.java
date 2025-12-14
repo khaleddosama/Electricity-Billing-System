@@ -11,11 +11,16 @@ public class NewCustomer extends User {
     }
     
     // (a) enable customer set all information 
-    public void setAllInformation(int id, String name, String email, String password) {
-        setId(id);
-        setName(name);
-        setEmail(email);
-        setPassword(password);
+   public void setAllInformation(int id, String name, String email, String password) {
+        try {
+            setId(id);
+            setName(name);
+            setEmail(email);
+            setPassword(password);
+        } 
+        catch (Exception e) {
+            System.out.println("Invalid details\nplease recheck\n");
+        }
     }
     
     public String getAllInformation(){
@@ -24,21 +29,23 @@ public class NewCustomer extends User {
     }
     
     // (b) enable customer attach contract
-    public void attachContract(String contractPath){
-        if(contractPath == null)
-            return;
-        this.contractPath = contractPath;
+    public void attachContract(String contractPath) {
+        try {
+            if (contractPath == null)
+                throw new NullPointerException();
+            this.contractPath = contractPath;
+        }
+        catch (Exception e) {
+            System.out.println("Contract path cannot be null");
+        }
     }
     
-    // (c) system will send email 
-    public String checkMeterCode(long metercode) {
-        if(metercode > 0){
+    // (c) system will send email (updated)
+    public String checkMeterCode() {
+        
             meterReady = true;
-            return "An email sent to : " + email + " your meter code " + metercode + " is now ready\n";
-        }        
-        else
-            return "Invalid details\n";
-    }
+            return "An email sent to : " + email + " your meter code " + (long)(Math.random()*10_0000 +1)+ " is now ready\n";
+       }
      
     // return contract
     public String getContract(){
@@ -46,13 +53,5 @@ public class NewCustomer extends User {
             return contractPath;
         else
             return "Please set contract path\n";
-    }
-    
-    
-    
-    
-    
-    
-    
-    
+    }    
 }

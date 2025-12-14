@@ -2,15 +2,12 @@ package system;
 
 public class Bill {
 
-    private long meterCode;
-    private boolean isPaid;
-
-    // updated 
+    protected long meterCode;
+        // updated 
+    protected static boolean isPaid;
     protected double payment;
     protected long paymentID;
-    protected static double currentTariff = 1.0;
-     
-    
+    protected static double currentTariff = 1.0; 
     public Bill(long meterCode, boolean isPaid, double payment, long paymentID) {
 
         this.meterCode = meterCode;
