@@ -1,109 +1,82 @@
 package system;
-
 import java.util.*;
 
 public class Admin extends User {
-       
-    public Admin(int id, String name, String email, String password){
-        super(id , name, email , password);
+
+    public Admin(int id, String name, String email, String password) {
+        super(id, name, email, password, "Admin");
     }
 
-    // (A) View all bills of specific regions
     public String viewBillsByRegion(String region) {
-        try {
-            // (updated)
-            Random units = new Random(2);
-            int numberOfUnits = units.nextInt(100) + 1;
+    String result = "------- Bills of region: " + region + " --------\n";
+    boolean found = false;
 
-            String result = "";
-            String display = "-------you are viewing the bills of region:" + region + "--------\n";
+    for (Bill b : DataStore.bills) {
 
-            for (int j = 0; j < 4; j++) {
+        if (b.getRegion().equalsIgnoreCase(region)) {
+            result += b.toString() + "\n----------------\n";
+            found = true;
+        }
+    }
 
-                result += "\n --- Month " + (j + 1) + " ---\n";
+    if (found) {
+        return result;
+    } else {
+        return "No bills found in this region.";
+    }
+}
 
-                for (int i = 0; i < numberOfUnits; i++) {
-                    result += "Bill of apartment " + (i + 1)
-                            + " with metercode " + ((long) (Math.random() * 100_000) + 1)
-                            + " paid " + ((Math.random() * 1000) + 1)
-                            + " LE\n";
-                }
+
+    public String viewTotalCollected() {
+        double total = 0;
+        for (Bill b : DataStore.bills) {
+            if (b.isPaid()) {
+                total += b.getPayment();
             }
-            return display + result;
-
-        } catch (Exception e) {
-            return "Error while viewing bills by region\nplease recheckPlease recheck";
         }
+        return "--- Admin Report ---\nTotal Collected Revenue: " + total + " LE";
     }
 
-    // (B) View total collected (Only Paid Bills)
-    public String viewTotalCollected(ArrayList<Bill> allBills) {
-        try {
-            double total = 0;
-
-            for (Bill bill : allBills) {
-                if (bill.isPaid()) {
-                    total += bill.getPayment();
-                }
+    public String reportConsumptionStats(String region) {
+        double sum = 0;
+        int count = 0;
+        for (Bill b : DataStore.bills) {
+            if (b.getRegion().equalsIgnoreCase(region) && b.isPaid()) {
+                sum += b.getPayment();
+                count++;
             }
-            return "--- Admin: Total Collected Revenue ---\n"
-                    + "Total collected : " + total;
-
-        } catch (Exception e) {
-            return "Error while calculating total collected revenue\nPlease recheck";
         }
+        if (count == 0) return "No data for region: " + region;
+        return "Region: " + region + "\nUnits: " + count + "\nAverage Payment: " + (sum / count) + " LE";
     }
 
-    // (C) Consumption statistics for specific region
-    public String reportConsumptionStats(String region, ArrayList<Bill> allBills) {
-        try {
-            double sum = 0;
-            int size = 0;
-
-            for (Bill bill : allBills) {
-                if (bill.isPaid()) {
-                    sum += bill.getPayment();
-                    size++;
-                }
-            }
-
-            return "Region : " + region
-                    + "\nNumber of units is : " + size
-                    + "\nAverage of total collected = " + (sum / size) + "\n";
-
-        } catch (Exception e) {
-            return "Error while generating consumption statistics\nPlease recheck";
-        }
+   
+    public String addUser(User newUser) {
+        DataStore.users.add(newUser);
+        DataStore.saveUsers();
+        return "User [" + newUser.getName() + "] added successfully.";
     }
 
-    // (D) Manage Users (Add / Update / Delete)
-    // 1. Add
-    public String addUser(ArrayList<User> users, User newUser) {
-        try {
-            users.add(newUser);
-            return "Admin: User " + newUser.getName() + " added.\n";
-        } catch (Exception e) {
-            return "Error while adding user\nPlease recheck\n";
+
+   public String deleteUser(int userId) {
+
+    for (int i = 0; i < DataStore.users.size(); i++) {
+        
+
+        if (DataStore.users.get(i).getId() == userId) {
+            
+            DataStore.users.remove(i); 
+            DataStore.saveUsers();     
+            
+            return "User ID " + userId + " deleted successfully.";
         }
     }
+    
 
-    // 2. Delete
-    public String deleteUser(ArrayList<User> users, int userId) {
-        try {
-            for (int i = 0; i < users.size(); i++) {
-                if (users.get(i).getId() == userId) {
-                    users.remove(i);
-                    return "User with user ID : " + userId + " deleted successfully\n";
-                }
-            }
-            return "User with user ID " + userId + " is not found\n";
-
-        } catch (Exception e) {
-            return "Error while deleting user\nPlease recheck\n";
-        }
-    }
-
-    // 3. Update (Email for example)
+    return "User not found.";
+}
+   
+   
     public String updateUserEmail(ArrayList<User> users, int userId, String newEmail) {
         try {
             for (User u : users) {
@@ -118,4 +91,32 @@ public class Admin extends User {
             return "Error while updating user email\nPlease recheck\n";
         }
     }
+   
+//       public String viewBillsByRegion(String region) {
+//        try {
+//            // (updated)
+//            Random units = new Random(2);
+//            int numberOfUnits = units.nextInt(100) + 1;
+//
+//            String result = "";
+//            String display = "-------you are viewing the bills of region:" + region + "--------\n";
+//
+//            for (int j = 0; j < 4; j++) {
+//
+//                result += "\n --- Month " + (j + 1) + " ---\n";
+//
+//                for (int i = 0; i < numberOfUnits; i++) {
+//                    result += "Bill of apartment " + (i + 1)
+//                            + " with metercode " + ((long) (Math.random() * 100_000) + 1)
+//                            + " paid " + ((Math.random() * 1000) + 1)
+//                            + " LE\n";
+//                }
+//            }
+//            return display + result;
+//
+//        } catch (Exception e) {
+//            return "Error while viewing bills by region\nplease recheckPlease recheck";
+//        }
+//    }
+   
 }

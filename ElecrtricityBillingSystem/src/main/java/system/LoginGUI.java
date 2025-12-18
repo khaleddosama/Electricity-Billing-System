@@ -6,10 +6,13 @@ public class LoginGUI {
 
     public LoginGUI() {
 
+        DataStore.loadUsers(); 
+
         JFrame f = new JFrame("Login");
         f.setSize(300, 200);
         f.setLayout(null);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.setLocationRelativeTo(null); 
 
         JLabel l1 = new JLabel("Email");
         l1.setBounds(20, 20, 80, 25);
@@ -33,28 +36,27 @@ public class LoginGUI {
 
         login.addActionListener(e -> {
 
-            String em = email.getText();
-            String pw = new String(pass.getPassword());
+            String em = email.getText().trim();
+            String pw = new String(pass.getPassword()).trim();
+
+            boolean loggedIn = false;
 
             for (User u : DataStore.users) {
-                if (u.getEmail().equals(em) && u.getPassword().equals(pw)) {
-
-                    if (u instanceof Admin) {
-                        new AdminGUI((Admin) u);
-                    } else if (u instanceof Operator) {
-                        new OperatorGUI((Operator) u);
-                    } else if (u instanceof OldCustomer) {
-                        new OldCustomerGUI((OldCustomer) u);
-                    } else if (u instanceof NewCustomer) {
-                        new NewCustomerGUI((NewCustomer) u);
-                    }
+                if (u.getEmail().equalsIgnoreCase(em) && u.getPassword().equals(pw)) {
+                    if (u instanceof Admin) new AdminGUI((Admin) u);
+                    else if (u instanceof Operator) new OperatorGUI((Operator) u);
+                    else if (u instanceof OldCustomer) new OldCustomerGUI((OldCustomer) u);
+                    else if (u instanceof NewCustomer) new NewCustomerGUI((NewCustomer) u);
 
                     f.dispose();
-                    return;
+                    loggedIn = true;
+                    break;
                 }
             }
 
-            JOptionPane.showMessageDialog(f, "Invalid Login");
+            if (!loggedIn) {
+                JOptionPane.showMessageDialog(f, "Invalid Email or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         f.setVisible(true);

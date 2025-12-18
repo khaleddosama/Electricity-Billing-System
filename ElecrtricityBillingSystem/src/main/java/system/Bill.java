@@ -1,55 +1,36 @@
 package system;
 
 public class Bill {
+    private long meterCode;
+    private double payment;
+    private long paymentID;
+    private String region;
+    private boolean isPaid;
+    public static double currentTariff = 0.5;
 
-    protected long meterCode;
-        // updated 
-    protected static boolean isPaid;
-    protected double payment;
-    protected long paymentID;
-    protected static double currentTariff = 1.0; 
-    protected String region;
-    
-    public Bill(long meterCode, boolean isPaid, double payment, long paymentID , String region) {
-
+    public Bill(long meterCode, double payment, long paymentID, String region, boolean isPaid) {
         this.meterCode = meterCode;
-        this.isPaid = isPaid;
         this.payment = payment;
         this.paymentID = paymentID;
         this.region = region;
+        this.isPaid = isPaid;
     }
 
-    public boolean isPaid() {
-        return isPaid;
+    public String toFileString() {
+        return meterCode + "," + payment + "," + paymentID + "," + region + "," + isPaid;
     }
 
-    public long getMeterCode() {
-        return meterCode;
-    }
-
-    // updated
-    public double getPayment() {
-        return payment;
-    }
-
-    public long getPaymentID() {
-        return paymentID;
-    }
-    
-    public void setRegion(String region){
-        this.region = region;
-    }
-    
-    public String getRegion(){
-        return region;
-    }
-
-    // updated
     @Override
     public String toString() {
-
-        return "Bill details :\n - Metercode: " + meterCode +  "\n - Payment: " +
-            payment + "\n - payment ID: " + paymentID + "\n - Region : " + region ;
+        return "ID: " + paymentID + " | Meter: " + meterCode + " | Region: " + region + 
+               " | Amount: " + payment + " LE | Status: " + (isPaid ? "PAID" : "UNPAID");
     }
 
+    // Getters & Setters
+    public long getMeterCode() { return meterCode; }
+    public double getPayment() { return payment; }
+    public long getPaymentID() { return paymentID; }
+    public String getRegion() { return region; }
+    public boolean isPaid() { return isPaid; }
+    public void setPaid(boolean paid) { isPaid = paid; }
 }

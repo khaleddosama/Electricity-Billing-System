@@ -1,77 +1,88 @@
-
 package system;
+
+import java.util.ArrayList;
 
 public class OldCustomer extends User {
 
-    protected long meterCode;
-    protected int monthlyreading;
-    
+    private long meterCode;
+    private int monthlyReading;
+
     public OldCustomer(int id, String name, String email, String password, long meterCode) {
-        super(id, name, email, password);
+        super(id, name, email, password, "OldCustomer");
         if (meterCode <= 0) {
-            throw new IllegalArgumentException("Invalid meter code\nPlease recheck\n");
+            throw new IllegalArgumentException("Invalid meter code");
         }
         this.meterCode = meterCode;
     }
-    
-    
-    // (a) enable customer pay with metercode
-    public String payBill(long meterCode, double payment) {
-        try {
-            if (meterCode <= 0 || payment <= 0) {
-                throw new IllegalArgumentException("Invalid data\nplease recheck");
-            }
-            Bill.isPaid=true;
-            return "Customer " + name + " paid: " + payment + " LE using meter code: " + meterCode;
-        }
-        catch (IllegalArgumentException e) {
-            return e.getMessage();
-        }
-    }
-    
 
-    // (b) enable customer set monthly reading
-    public void setMonthlyReading(int monthlyReading) {
-        try {
-            if (monthlyReading < 0) {
-                throw new IllegalArgumentException("Invalid monthly reading\nPlease recheck\n");
+    public String payBill(long meterCodeToPay, double payment) {
+        if (payment <= 0) {
+            return "Invalid payment amount!";
+        }
+
+        for (Bill b : DataStore.bills) {
+           
+            if (b.getMeterCode() == meterCodeToPay && !b.isPaid()) {
+                b.setPaid(true);
+                DataStore.saveBills();
+                return "Payment successful for Meter: " + meterCodeToPay + "\nPaid: " + payment + " LE";
             }
-            this.monthlyreading = monthlyReading;
         }
-        catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    
-    // (c) enable customer complain about bill 
-    public String complaintAboutBill(long meterCode, String message) {
-        try {
-            if (message == null) {
-                throw new IllegalArgumentException("Invalid complaint message");
-            }
-            return "your complaint about the bill with meter code: " + meterCode + " is: " + message
-                    + "\n we will review your complaint, thank you for your feedback";
-        } 
-        catch (IllegalArgumentException e) {
-            return e.getMessage();
-        }
+        return "No unpaid bills found for this Meter Code.";
     }
 
-    // (d) enable customer check unpaid months if more than 2 
+    public String setMonthlyReading(int monthlyReading) {
+        if (monthlyReading < 0) {
+            return "Invalid monthly reading! Must be positive.";
+        }
+        this.monthlyReading = monthlyReading;
+
+        return "Monthly reading updated to: " + monthlyReading;
+    }
+
+
+    public String complaintAboutBill(String message) {
+        if (message == null || message.isEmpty()) {
+            return "Complaint cannot be empty!";
+        }
+ 
+        return "Complaint received: \"" + message + "\"\nWe will review it shortly.";
+    }
+    
+//        public String complaintAboutBill(long meterCode, String message) {
+//        try {
+//            if (message == null) {
+//                throw new IllegalArgumentException("Invalid complaint message");
+//            }
+//            return "your complaint about the bill with meter code: " + meterCode + " is: " + message
+//                    + "\n we will review your complaint, thank you for your feedback";
+//        } 
+//        catch (IllegalArgumentException e) {
+//            return e.getMessage();
+//        }
+//    }
+
     public String checkUnpaidMonths(int unpaidMonths) {
-        try {
-            if (unpaidMonths < 0) {
-                throw new IllegalArgumentException("Invalid unpaid months\nPlease recheck");
-            }
-            if (unpaidMonths >= 3) {
-                return "An email will be sent to: " + email + " due to delay in paying";
-            } 
-            else{
-                return "No urgent bills should be paid";
-            }
-        } 
-        catch (IllegalArgumentException e) {
-            return e.getMessage();
+        if (unpaidMonths < 0) {
+            return "Invalid input.";
         }
+        if (unpaidMonths >= 3) {
+            return " WARNING: Warning email sent to " + this.email + ". Please pay to avoid service cut.";
+        }
+        return "You have " + unpaidMonths + " unpaid months. No urgent action needed.";
+    }
+
+    public long getMeterCode() {
+        return meterCode;
+    }
+
+    @Override
+    public String toFileString() {
+        return super.toFileString() + "," + meterCode;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer: " + name + " | Meter Code: " + meterCode + " | Email: " + email;
     }
 }
